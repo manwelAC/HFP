@@ -323,7 +323,7 @@
 
     {{-- Header --}}
     <div class="bday-header">
-        <div class="bday-header-title">Birthday Greetings</div>
+        <div class="bday-header-title">Employee Birthdays</div>
         <div class="bday-header-sub">Today &amp; upcoming in the next 7 days</div>
     </div>
 

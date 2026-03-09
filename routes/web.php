@@ -264,6 +264,17 @@ Route::get('employees_management', [employeeController::class, 'employees_manage
      Route::get('face_and_time_audit', [facetimeauditController::class, 'face_and_time_audit'])->middleware(['auth'])->name('face_and_time_audit');
      Route::post('load_face_time_audit_tbl', [facetimeauditController::class, 'load_face_time_audit_tbl'])->middleware(['auth'])->name('load_face_time_audit_tbl');
     
+    //Incident Report Routes
+    Route::get('incident_report', [IncidentReportController::class, 'index'])->middleware(['auth'])->name('incident_report');
+
+    //NTE Management Routes
+    Route::get('nte_management', [NteController::class, 'index'])->middleware(['auth'])->name('nte_management');
+
+
+    //Disciplinary Action Routes
+    Route::get('disciplinary_action', [DisciplinaryController::class, 'index'])->middleware(['auth'])->name('disciplinary');
+
+
     
 
     
