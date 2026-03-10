@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\ForgotPasswordController; // forgot password
 use Illuminate\Support\Facades\Route;
 use Auth;
 use App\Http\Controllers\NTEController;
+use App\Http\Controllers\DisciplinaryController;
 
 
 /*
@@ -286,7 +287,10 @@ Route::get('employees_management', [employeeController::class, 'employees_manage
                                                         
     //Disciplinary Action Routes
     Route::get('disciplinary_action', [DisciplinaryController::class, 'index'])->middleware(['auth'])->name('disciplinary');
-
+    Route::get('da/list', [DisciplinaryController::class, 'list'])->middleware(['auth'])->name('da.list');
+    Route::get('da/view/{id}', [DisciplinaryController::class, 'view'])->middleware(['auth'])->name('da.view');
+    Route::post('da/store', [DisciplinaryController::class, 'store'])->middleware(['auth'])->name('da.store');
+    Route::post('da/delete/{id}', [DisciplinaryController::class, 'delete'])->middleware(['auth'])->name('da.delete');          
 
     
 

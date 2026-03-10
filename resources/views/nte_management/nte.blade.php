@@ -246,6 +246,76 @@
     </div>
 </div>
 
+{{-- Issue DA Modal --}}
+<div class="modal fade" id="modal_issue_da" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Issue Disciplinary Action — <span id="da_nte_case_number"></span></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="da_nte_id">
+                <input type="hidden" id="da_employee_id">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Employee</label>
+                            <input type="text" class="form-control" id="da_employee_name" readonly>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Date Issued <span class="text-danger">*</span></label>
+                            <input type="date" class="form-control" id="da_date_issued">
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label>Case Details <span class="text-danger">*</span></label>
+                            <textarea class="form-control" id="da_case_details" rows="4"></textarea>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label>Remarks</label>
+                            <textarea class="form-control" id="da_remarks" rows="3" placeholder="Admin remarks (optional)..."></textarea>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Sanction <span class="text-danger">*</span></label>
+                            <select class="form-control" id="da_sanction">
+                                <option value="">-- Select Sanction --</option>
+                                <option value="written_warning">Written Warning</option>
+                                <option value="suspension">Suspension</option>
+                                <option value="demotion">Demotion</option>
+                                <option value="termination">Termination</option>
+                                <option value="reprimand">Reprimand</option>
+                                <option value="others">Others</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Sanction Details</label>
+                            <input type="text" class="form-control" id="da_sanction_details" placeholder="e.g. 3 days suspension (optional)">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" id="btn_save_da">
+                    <i class="fa fa-gavel"></i> Issue Disciplinary Action
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @endif
 @stop
 @section("scripts")
@@ -358,103 +428,106 @@ $('#btn_add_nte').on('click', function(){
         });
     });
 
-    // View NTE
-    $(document).on('click', '.btn_view_nte', function(){
-        var id = $(this).data('id');
+// View NTE
+$(document).on('click', '.btn_view_nte', function(){
+    var id = $(this).data('id');
 
-        HoldOn.open({ theme: 'sk-circle' });
+    HoldOn.open({ theme: 'sk-circle' });
 
-        $.ajax({
-            url: '/nte/view/' + id,
-            type: 'GET',
-            success: function(response){
-                HoldOn.close();
-                if(response.success){
-                    var nte = response.data;
+    $.ajax({
+        url: '/nte/view/' + id,
+        type: 'GET',
+        success: function(response){
+            HoldOn.close();
+            if(response.success){
+                var nte = response.data;
 
-                    $('#view_nte_case_number').text(nte.case_number);
+                $('#view_nte_case_number').text(nte.case_number);
 
-                    // Show/hide reply button (employee side, only if pending)
-                    @if(Auth::user()->access[Route::current()->action["as"]]["user_type"] == 'employee')
-                    if(nte.status == 'pending'){
-                        $('#btn_open_reply').removeClass('d-none').data('id', nte.id);
-                    } else {
-                        $('#btn_open_reply').addClass('d-none');
-                    }
-                    @endif
-
-                    // Show/hide Issue DA button (HR side, pending or replied)
-                    @if(Auth::user()->access[Route::current()->action["as"]]["user_type"] == 'hr')
-                    if(nte.status == 'pending' || nte.status == 'replied'){
-                        $('#btn_issue_da').removeClass('d-none').data('id', nte.id).data('nte', nte);
-                    } else {
-                        $('#btn_issue_da').addClass('d-none');
-                    }
-                    @endif
-
-                    $('#view_nte_body').html(`
-                        <div class="row">
-                            <div class="col-md-6">
-                                <label class="font-weight-bold">Case Number</label>
-                                <p>${nte.case_number}</p>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="font-weight-bold">IR Case Number</label>
-                                <p>${nte.ir_case_number}</p>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="font-weight-bold">Employee</label>
-                                <p>${nte.employee_name}</p>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="font-weight-bold">Status</label>
-                                <p>
-                                    ${nte.status == 'pending' ? '<span class="badge badge-warning">Pending</span>' :
-                                      nte.status == 'replied' ? '<span class="badge badge-info">Replied</span>' :
-                                      '<span class="badge badge-success">Closed</span>'}
-                                </p>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="font-weight-bold">Date Served</label>
-                                <p>${nte.date_served ?? 'N/A'}</p>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="font-weight-bold">Due Date</label>
-                                <p>${nte.due_date ?? 'N/A'}</p>
-                            </div>
-                            <div class="col-md-12">
-                                <label class="font-weight-bold">Case Details</label>
-                                <p>${nte.case_details}</p>
-                            </div>
-                            <div class="col-md-12">
-                                <label class="font-weight-bold">Remarks</label>
-                                <p>${nte.remarks ?? 'N/A'}</p>
-                            </div>
-                            <div class="col-md-12">
-                                <label class="font-weight-bold">Resolution</label>
-                                <p>${nte.resolution ?? 'N/A'}</p>
-                            </div>
-                            ${nte.employee_reply ? `
-                            <div class="col-md-12">
-                                <hr>
-                                <label class="font-weight-bold">Employee Explanation</label>
-                                <p>${nte.employee_reply}</p>
-                                <small class="text-muted">Submitted on: ${nte.reply_date}</small>
-                            </div>` : ''}
-                        </div>
-                    `);
-
-                    $('#modal_view_nte').modal('show');
+                // Show/hide reply button (employee side, only if pending)
+                @if(Auth::user()->access[Route::current()->action["as"]]["user_type"] == 'employee')
+                if(nte.status == 'pending'){
+                    $('#btn_open_reply').removeClass('d-none').data('id', nte.id);
                 } else {
-                    $.notify({ message: response.message }, { type: 'danger' });
+                    $('#btn_open_reply').addClass('d-none');
                 }
-            },
-            error: function(){
-                HoldOn.close();
-                $.notify({ message: 'Something went wrong. Please try again.' }, { type: 'danger' });
+                @endif
+
+                // Show/hide Issue DA button (HR side, pending or replied)
+                @if(Auth::user()->access[Route::current()->action["as"]]["user_type"] == 'hr')
+                if(nte.status == 'pending' || nte.status == 'replied'){
+                    $('#btn_issue_da').removeClass('d-none').data('id', nte.id).data('nte', nte);
+                } else {
+                    $('#btn_issue_da').addClass('d-none');
+                }
+                @endif
+
+                var employee_reply_html = nte.employee_reply ?
+                    '<div class="col-md-12">' +
+                        '<hr>' +
+                        '<label class="font-weight-bold">Employee Explanation</label>' +
+                        '<p>' + nte.employee_reply + '</p>' +
+                        '<small class="text-muted">Submitted on: ' + nte.reply_date + '</small>' +
+                    '</div>'
+                : '';
+
+                $('#view_nte_body').html(`
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label class="font-weight-bold">Case Number</label>
+                            <p>${nte.case_number}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="font-weight-bold">IR Case Number</label>
+                            <p>${nte.ir_case_number ?? 'N/A'}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="font-weight-bold">Employee</label>
+                            <p>${nte.employee_name}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="font-weight-bold">Status</label>
+                            <p>
+                                ${nte.status == 'pending' ? '<span class="badge badge-warning">Pending</span>' :
+                                  nte.status == 'replied' ? '<span class="badge badge-info">Replied</span>' :
+                                  '<span class="badge badge-success">Closed</span>'}
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="font-weight-bold">Date Served</label>
+                            <p>${nte.date_served ?? 'N/A'}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="font-weight-bold">Due Date</label>
+                            <p>${nte.due_date ?? 'N/A'}</p>
+                        </div>
+                        <div class="col-md-12">
+                            <label class="font-weight-bold">Case Details</label>
+                            <p>${nte.case_details}</p>
+                        </div>
+                        <div class="col-md-12">
+                            <label class="font-weight-bold">Remarks</label>
+                            <p>${nte.remarks ?? 'N/A'}</p>
+                        </div>
+                        <div class="col-md-12">
+                            <label class="font-weight-bold">Resolution</label>
+                            <p>${nte.resolution ?? 'N/A'}</p>
+                        </div>
+                        ${employee_reply_html}
+                    </div>
+                `);
+
+                $('#modal_view_nte').modal('show');
+            } else {
+                $.notify({ message: response.message }, { type: 'danger' });
             }
-        });
+        },
+        error: function(){
+            HoldOn.close();
+            $.notify({ message: 'Something went wrong. Please try again.' }, { type: 'danger' });
+        }
     });
+});
 
     // Open Reply Modal
     $(document).on('click', '#btn_open_reply', function(){
@@ -612,6 +685,69 @@ $('#btn_add_nte').on('click', function(){
             }
         });
     });
+
+
+    // Open Issue DA Modal
+$(document).on('click', '#btn_issue_da', function(){
+    var nte = $(this).data('nte');
+
+    $('#da_nte_id').val(nte.id);
+    $('#da_employee_id').val(nte.employee_id);
+    $('#da_employee_name').val(nte.employee_name);
+    $('#da_nte_case_number').text(nte.case_number);
+    $('#da_date_issued').val('');
+    $('#da_case_details').val(nte.case_details); // pre-fill from NTE
+    $('#da_remarks').val('');
+    $('#da_sanction').val('');
+    $('#da_sanction_details').val('');
+
+    $('#modal_issue_da').modal('show');
+});
+
+// Save DA
+$(document).on('click', '#btn_save_da', function(){
+    var nte_id       = $('#da_nte_id').val();
+    var employee_id  = $('#da_employee_id').val();
+    var date_issued  = $('#da_date_issued').val();
+    var case_details = $('#da_case_details').val();
+    var sanction     = $('#da_sanction').val();
+
+    if(!date_issued || !case_details || !sanction){
+        alert('Please fill in all required fields.'); return;
+    }
+
+    HoldOn.open({ theme: 'sk-circle' });
+
+    $.ajax({
+        url: '{{ route("da.store") }}',
+        type: 'POST',
+        data: {
+            _token:           '{{ csrf_token() }}',
+            nte_id:           nte_id,
+            employee_id:      employee_id,
+            date_issued:      date_issued,
+            case_details:     case_details,
+            remarks:          $('#da_remarks').val(),
+            sanction:         sanction,
+            sanction_details: $('#da_sanction_details').val()
+        },
+        success: function(response){
+            HoldOn.close();
+            if(response.success){
+                $('#modal_issue_da').modal('hide');
+                $('#modal_view_nte').modal('hide');
+                nte_table.ajax.reload();
+                $.notify({ message: response.message }, { type: 'success' });
+            } else {
+                $.notify({ message: response.message }, { type: 'danger' });
+            }
+        },
+        error: function(){
+            HoldOn.close();
+            $.notify({ message: 'Something went wrong. Please try again.' }, { type: 'danger' });
+        }
+    });
+});
 
 });
 </script>

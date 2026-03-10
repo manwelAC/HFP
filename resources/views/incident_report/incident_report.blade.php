@@ -852,6 +852,86 @@ $(document).on('click', '.btn_delete_ir', function(){
         });
     });
 
+    // View NTE from IR modal
+$(document).on('click', '.btn_view_nte_from_ir', function(){
+    var id = $(this).data('id');
+
+    HoldOn.open({ theme: 'sk-circle' });
+
+    $.ajax({
+        url: '/nte/view/' + id,
+        type: 'GET',
+        success: function(response){
+            HoldOn.close();
+            if(response.success){
+                var nte = response.data;
+
+                var employee_reply_html = nte.employee_reply ?
+                    '<div class="col-md-12">' +
+                        '<hr>' +
+                        '<label class="font-weight-bold">Employee Explanation</label>' +
+                        '<p>' + nte.employee_reply + '</p>' +
+                        '<small class="text-muted">Submitted on: ' + nte.reply_date + '</small>' +
+                    '</div>'
+                : '';
+
+                $('#view_case_number').text(nte.case_number);
+                $('#view_ir_body').html(`
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label class="font-weight-bold">Case Number</label>
+                            <p>${nte.case_number}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="font-weight-bold">IR Case Number</label>
+                            <p>${nte.ir_case_number ?? 'N/A'}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="font-weight-bold">Employee</label>
+                            <p>${nte.employee_name}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="font-weight-bold">Status</label>
+                            <p>
+                                ${nte.status == 'pending' ? '<span class="badge badge-warning">Pending</span>' :
+                                  nte.status == 'replied' ? '<span class="badge badge-info">Replied</span>' :
+                                  '<span class="badge badge-success">Closed</span>'}
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="font-weight-bold">Date Served</label>
+                            <p>${nte.date_served ?? 'N/A'}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="font-weight-bold">Due Date</label>
+                            <p>${nte.due_date ?? 'N/A'}</p>
+                        </div>
+                        <div class="col-md-12">
+                            <label class="font-weight-bold">Case Details</label>
+                            <p>${nte.case_details}</p>
+                        </div>
+                        <div class="col-md-12">
+                            <label class="font-weight-bold">Remarks</label>
+                            <p>${nte.remarks ?? 'N/A'}</p>
+                        </div>
+                        <div class="col-md-12">
+                            <label class="font-weight-bold">Resolution</label>
+                            <p>${nte.resolution ?? 'N/A'}</p>
+                        </div>
+                        ${employee_reply_html}
+                    </div>
+                `);
+            } else {
+                $.notify({ message: response.message }, { type: 'danger' });
+            }
+        },
+        error: function(){
+            HoldOn.close();
+            $.notify({ message: 'Something went wrong. Please try again.' }, { type: 'danger' });
+        }
+    });
+});
+
 });
 
 
