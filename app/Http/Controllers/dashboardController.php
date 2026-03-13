@@ -80,6 +80,63 @@ class dashboardController extends Controller
 
         $upcomingBirthdays = $upcomingBirthdays->sortBy('days_until')->values();
 
+        // Get Anniversary Data
+        $allEmployeesForAnniversary = DB::connection("intra_payroll")
+            ->table("tbl_employee")
+            ->select('id', 'first_name', 'middle_name', 'last_name', 'ext_name', 'start_date', 'profile_picture', 'department')
+            ->whereNotNull('start_date')
+            ->where('start_date', '!=', '')
+            ->get();
+
+        $todayAnniversaries = collect();
+        $upcomingAnniversaries = collect();
+
+        foreach ($allEmployeesForAnniversary as $emp) {
+            try {
+                $startDate = Carbon::parse($emp->start_date);
+            } catch (\Exception $e) {
+                continue;
+            }
+
+            // Only show if 1 or more years
+            $yearsInCompany = $startDate->diffInYears($today);
+            if ($yearsInCompany < 1) {
+                continue;
+            }
+
+            // Calculate anniversary date this year
+            try {
+                $anniversaryThisYear = Carbon::create($today->year, $startDate->month, $startDate->day);
+            } catch (\Exception $e) {
+                $anniversaryThisYear = Carbon::create($today->year, 1, 1);
+            }
+
+            // Check if anniversary is today or upcoming within 7 days
+            $diffDays = $today->diffInDays($anniversaryThisYear);
+            
+            // If difference is 0, anniversary is today
+            if ((int)$diffDays === 0) {
+                $emp->days_until = 0;
+                $emp->full_name = $this->formatEmployeeName($emp);
+                $emp->years_service = $yearsInCompany;
+                $todayAnniversaries->push($emp);
+            } 
+            // If anniversary hasn't happened yet but is within 7 days
+            elseif ($diffDays > 0 && $diffDays <= 7) {
+                $emp->days_until = (int)$diffDays;
+                $emp->full_name = $this->formatEmployeeName($emp);
+                $emp->years_service = $yearsInCompany;
+                $upcomingAnniversaries->push($emp);
+            }
+            // Check if anniversary was in the past 7 days (previous year) - also show upcoming
+            elseif ($diffDays < 0 && $diffDays >= -7) {
+                // Anniversary already passed this year
+                continue;
+            }
+        }
+
+        $upcomingAnniversaries = $upcomingAnniversaries->sortBy('days_until')->values();
+
         return view("dashboard.index")
             ->with("tbl_employee", $tbl_employee)
             ->with("department", $department)
@@ -92,7 +149,9 @@ class dashboardController extends Controller
             ->with("loans", $loans)
             ->with("branches", $branches)
             ->with("todayBirthdays", $todayBirthdays)
-            ->with("upcomingBirthdays", $upcomingBirthdays);
+            ->with("upcomingBirthdays", $upcomingBirthdays)
+            ->with("todayAnniversaries", $todayAnniversaries)
+            ->with("upcomingAnniversaries", $upcomingAnniversaries);
     }
 
     private function formatEmployeeName($emp): string

@@ -88,6 +88,7 @@ class company_setting extends Model
                     "designation" => $designation,
                     "bio_id" => $tbl_employee->bio_id,
                     "id" => $tbl_employee->id,
+                    "start_date" => $tbl_employee->start_date,
 
                     
 
@@ -104,7 +105,8 @@ class company_setting extends Model
                     "department" => "",
                     "branch" => "",
                     "designation" => "",
-                    "bio_id" => ""
+                    "bio_id" => "",
+                    "start_date" => null
                 );
             }
 

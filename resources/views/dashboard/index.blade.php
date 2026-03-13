@@ -288,6 +288,265 @@
     .bday-upcoming-list li:nth-child(3) { animation-delay: 0.18s; }
     .bday-upcoming-list li:nth-child(4) { animation-delay: 0.23s; }
     .bday-upcoming-list li:nth-child(5) { animation-delay: 0.28s; }
+
+    /* ── Anniversary Widget ── */
+    .anniversary-widget {
+        border: none;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 4px 24px rgba(0,0,0,0.10);
+        font-family: 'Nunito', sans-serif;
+    }
+
+    .anniv-header {
+        background: linear-gradient(120deg, #667eea, #764ba2, #f093fb);
+        padding: 16px 20px 14px;
+        position: relative;
+        overflow: hidden;
+    }
+    .anniv-header::before {
+        content: '🎖️';
+        position: absolute;
+        right: -8px;
+        top: -10px;
+        font-size: 72px;
+        opacity: 0.13;
+        transform: rotate(-15deg);
+        pointer-events: none;
+    }
+    .anniv-header-title {
+        font-size: 15px;
+        font-weight: 800;
+        color: #fff;
+        letter-spacing: 0.3px;
+        margin: 0;
+        text-shadow: 0 1px 3px rgba(0,0,0,0.15);
+    }
+    .anniv-header-sub {
+        font-size: 11px;
+        color: rgba(255,255,255,0.78);
+        margin-top: 3px;
+        font-weight: 600;
+    }
+
+    .anniv-body {
+        background: #fff;
+        padding: 14px 16px 16px;
+    }
+
+    .anniv-section-label {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 10px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: #bbb;
+        margin-bottom: 10px;
+        font-family: 'Nunito', sans-serif;
+    }
+    .anniv-section-label::after {
+        content: '';
+        flex: 1;
+        height: 1px;
+        background: #f0f0f0;
+    }
+
+    .anniv-today-card {
+        display: flex;
+        align-items: center;
+        gap: 13px;
+        background: linear-gradient(135deg, #f0e6ff, #f5e6ff);
+        border: 1.5px solid #e6d5ff;
+        border-radius: 12px;
+        padding: 12px 14px;
+        margin-bottom: 8px;
+        position: relative;
+        overflow: hidden;
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .anniv-today-card:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 18px rgba(118,75,162,0.18);
+    }
+    .anniv-today-card .confetti-bg {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 36px;
+        opacity: 0.12;
+        pointer-events: none;
+    }
+
+    .anniv-avatar {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2.5px solid #667eea;
+        flex-shrink: 0;
+        box-shadow: 0 2px 8px rgba(102,126,234,0.25);
+    }
+    .anniv-avatar-placeholder {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        font-size: 17px;
+        color: #fff;
+        flex-shrink: 0;
+        box-shadow: 0 2px 8px rgba(102,126,234,0.3);
+        font-family: 'Nunito', sans-serif;
+        text-shadow: 0 1px 2px rgba(0,0,0,0.15);
+    }
+
+    .anniv-today-card .anniv-name {
+        font-weight: 800;
+        font-size: 13.5px;
+        color: #2d2d2d;
+        line-height: 1.3;
+        font-family: 'Nunito', sans-serif;
+    }
+    .anniv-today-card .anniv-meta {
+        font-size: 11.5px;
+        color: #667eea;
+        font-weight: 600;
+        margin-top: 2px;
+    }
+    .anniv-today-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        background: linear-gradient(90deg, #667eea, #764ba2);
+        color: #fff;
+        font-size: 10px;
+        font-weight: 800;
+        padding: 3px 9px;
+        border-radius: 20px;
+        margin-top: 5px;
+        letter-spacing: 0.4px;
+        text-transform: uppercase;
+        box-shadow: 0 2px 6px rgba(102,126,234,0.35);
+        font-family: 'Nunito', sans-serif;
+    }
+
+    .anniv-upcoming-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+    .anniv-upcoming-list li {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        background: #fafafa;
+        border: 1px solid #f0f0f0;
+        border-radius: 10px;
+        padding: 9px 12px;
+        transition: background 0.15s, transform 0.15s;
+    }
+    .anniv-upcoming-list li:hover {
+        background: #f0e6ff;
+        border-color: #e6d5ff;
+        transform: translateX(2px);
+    }
+
+    .anniv-days-pill {
+        flex-shrink: 0;
+        min-width: 42px;
+        height: 42px;
+        border-radius: 10px;
+        background: linear-gradient(135deg, #f0e6ff, #e6d5ff);
+        border: 1.5px solid #d4c0ff;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        font-family: 'Nunito', sans-serif;
+    }
+    .anniv-days-pill .anniv-days-num {
+        font-size: 17px;
+        font-weight: 800;
+        color: #764ba2;
+        line-height: 1;
+    }
+    .anniv-days-pill .anniv-days-label {
+        font-size: 9px;
+        font-weight: 700;
+        color: #667eea;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .anniv-days-pill.is-tomorrow {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        border-color: #667eea;
+    }
+    .anniv-days-pill.is-tomorrow .anniv-days-num,
+    .anniv-days-pill.is-tomorrow .anniv-days-label {
+        color: #fff;
+    }
+
+    .anniv-upcoming-list .anniv-info {
+        flex: 1;
+        min-width: 0;
+    }
+    .anniv-upcoming-list .anniv-info .anniv-name {
+        font-weight: 700;
+        font-size: 13px;
+        color: #2d2d2d;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        font-family: 'Nunito', sans-serif;
+    }
+    .anniv-upcoming-list .anniv-info .anniv-years {
+        font-size: 11px;
+        color: #667eea;
+        font-weight: 600;
+        margin-top: 1px;
+    }
+
+    .anniv-empty {
+        text-align: center;
+        padding: 22px 10px;
+    }
+    .anniv-empty-icon {
+        font-size: 36px;
+        display: block;
+        margin-bottom: 8px;
+        opacity: 0.45;
+    }
+    .anniv-empty-text {
+        font-size: 13px;
+        color: #ccc;
+        font-weight: 600;
+        font-family: 'Nunito', sans-serif;
+    }
+
+    @keyframes annivFadeUp {
+        from { opacity: 0; transform: translateY(8px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+    .anniv-today-card,
+    .anniv-upcoming-list li {
+        animation: annivFadeUp 0.3s ease both;
+    }
+    .anniv-today-card:nth-child(1)       { animation-delay: 0.05s; }
+    .anniv-today-card:nth-child(2)       { animation-delay: 0.10s; }
+    .anniv-upcoming-list li:nth-child(1) { animation-delay: 0.08s; }
+    .anniv-upcoming-list li:nth-child(2) { animation-delay: 0.13s; }
+    .anniv-upcoming-list li:nth-child(3) { animation-delay: 0.18s; }
+    .anniv-upcoming-list li:nth-child(4) { animation-delay: 0.23s; }
+    .anniv-upcoming-list li:nth-child(5) { animation-delay: 0.28s; }
 </style>
 @stop
 @section("content")
@@ -393,6 +652,8 @@
 
     </div>
 </div>
+
+
                 
                 <div class="row mb-4">
                     <div class="col-xl-4 col-sm-12 col-12">
@@ -606,6 +867,7 @@
                         </div>
                    
             </div>
+
             <div class="col-xl-3 col-sm-12 col-12 d-flex">
                 <div class="card flex-fill">
                     <div class="dashboard-profile">
@@ -630,7 +892,86 @@
                     </div>
                 </div>
             </div>
+
+
+<div class="col-xl-9 col-sm-12 col-12 anniversary-widget mt-4">
+
+    {{-- Header --}}
+    <div class="anniv-header">
+        <div class="anniv-header-title">Employee Anniversaries</div>
+        <div class="anniv-header-sub">Today &amp; upcoming in the next 7 days</div>
+    </div>
+
+    <div class="anniv-body">
+
+        {{-- TODAY'S ANNIVERSARIES --}}
+        @if($todayAnniversaries->isNotEmpty())
+            <div class="anniv-section-label">🎖️ Today</div>
+
+            @foreach($todayAnniversaries as $emp)
+                @php
+                    $initials = strtoupper(substr($emp->first_name, 0, 1) . substr($emp->last_name, 0, 1));
+                @endphp
+                <div class="anniv-today-card">
+                    <span class="confetti-bg">🎉</span>
+
+                    @if(!empty($emp->profile_picture) && file_exists(public_path($emp->profile_picture)))
+                        <img src="{{ asset($emp->profile_picture) }}" class="anniv-avatar" alt="{{ $emp->full_name }}">
+                    @else
+                        <div class="anniv-avatar-placeholder">{{ $initials }}</div>
+                    @endif
+
+                    <div>
+                        <div class="anniv-name">{{ $emp->full_name }}</div>
+                        <div class="anniv-meta">🎊 Celebrating {{ $emp->years_service }} {{ $emp->years_service === 1 ? 'Year' : 'Years' }}</div>
+                        <span class="anniv-today-badge">🌟 Work Anniversary!</span>
+                    </div>
+                </div>
+            @endforeach
+        @endif
+
+        {{-- UPCOMING ANNIVERSARIES --}}
+        @if($upcomingAnniversaries->isNotEmpty())
+            <div class="anniv-section-label" style="{{ $todayAnniversaries->isNotEmpty() ? 'margin-top:14px;' : '' }}">
+                📅 Upcoming
+            </div>
+
+            <ul class="anniv-upcoming-list">
+                @foreach($upcomingAnniversaries as $emp)
+                    @php
+                        $isTomorrow = $emp->days_until === 1;
+                        $label = $isTomorrow ? 'tmrw' : 'days';
+                        $dateFormatted = \Carbon\Carbon::parse($emp->start_date)->format('M d');
+                    @endphp
+                    <li>
+                        <div class="anniv-days-pill {{ $isTomorrow ? 'is-tomorrow' : '' }}">
+                            <span class="anniv-days-num">{{ $emp->days_until }}</span>
+                            <span class="anniv-days-label">{{ $label }}</span>
+                        </div>
+                        <div class="anniv-info">
+                            <div class="anniv-name">{{ $emp->full_name }}</div>
+                            <div class="anniv-years">{{ $emp->years_service }} {{ $emp->years_service === 1 ? 'Year' : 'Years' }} of service</div>
+                        </div>
+                    </li>
+                @endforeach
+            </ul>
+        @endif
+
+        {{-- EMPTY STATE --}}
+        @if($todayAnniversaries->isEmpty() && $upcomingAnniversaries->isEmpty())
+            <div class="anniv-empty">
+                <span class="anniv-empty-icon">🎊</span>
+                <div class="anniv-empty-text">No work anniversaries in the next 7 days</div>
+            </div>
+        @endif
+
+    </div>
+</div>
+ 
         </div>
+
+
+
         <div class="row" id="graph_container">
             <div class="col-md-6 ">
                 

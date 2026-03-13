@@ -3,7 +3,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Auth\ForgotPasswordController; // forgot password
 use Illuminate\Support\Facades\Route;
 use Auth;
-use App\Http\Controllers\NTEController;
+use App\Http\Controllers\NteController;
 use App\Http\Controllers\DisciplinaryController;
 
 
