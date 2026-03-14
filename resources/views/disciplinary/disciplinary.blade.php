@@ -92,9 +92,39 @@
 </div>
 
 @endif
+
+{{-- Success Modal --}}
+<div class="modal fade" id="successModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-success">
+                <h5 class="modal-title" style="color: white;">✓ Success</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color: white;">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="successMessage" style="text-align: center; padding: 30px;">
+                <!-- Message will be inserted here -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" data-dismiss="modal">OK</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @stop
 @section("scripts")
 <script>
+// Function to show success modal
+function showSuccessModal(message) {
+    $('#successMessage').html(message);
+    $('#successModal').modal('show');
+    setTimeout(function() {
+        $('#successModal').modal('hide');
+    }, 3000);
+}
+
 $(document).ready(function(){
 
     // Initialize DataTable
@@ -225,14 +255,14 @@ $(document).ready(function(){
                                 HoldOn.close();
                                 if(response.success){
                                     da_table.ajax.reload();
-                                    $.notify({ message: response.message }, { type: 'success' });
+                                    showSuccessModal('<strong>The Disciplinary Action was Successfully Deleted</strong>');
                                 } else {
-                                    $.notify({ message: response.message }, { type: 'danger' });
+                                    $.notify('Error: ' + response.message, {type:'danger', icon:'close'});
                                 }
                             },
                             error: function(){
                                 HoldOn.close();
-                                $.notify({ message: 'Something went wrong. Please try again.' }, { type: 'danger' });
+                                $.notify('Something went wrong. Please try again.', {type:'danger', icon:'close'});
                             }
                         });
                     }

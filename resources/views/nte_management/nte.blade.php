@@ -317,9 +317,39 @@
 </div>
 
 @endif
+
+{{-- Success Modal --}}
+<div class="modal fade" id="successModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-success">
+                <h5 class="modal-title" style="color: white;">✓ Success</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color: white;">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="successMessage" style="text-align: center; padding: 30px;">
+                <!-- Message will be inserted here -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" data-dismiss="modal">OK</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @stop
 @section("scripts")
 <script>
+// Function to show success modal
+function showSuccessModal(message) {
+    $('#successMessage').html(message);
+    $('#successModal').modal('show');
+    setTimeout(function() {
+        $('#successModal').modal('hide');
+    }, 3000);
+}
+
 $(document).ready(function(){
 
     // Initialize DataTable
@@ -416,9 +446,9 @@ $('#btn_add_nte').on('click', function(){
                 if(response.success){
                     $('#modal_add_nte').modal('hide');
                     nte_table.ajax.reload();
-                    $.notify({ message: response.message }, { type: 'success' });
+                    showSuccessModal('<strong>NTE was Successfully Added</strong>');
                 } else {
-                    $.notify({ message: response.message }, { type: 'danger' });
+                    $.notify('Error: ' + response.message, {type:'danger', icon:'close'});
                 }
             },
             error: function(){
@@ -561,14 +591,14 @@ $(document).on('click', '.btn_view_nte', function(){
                     $('#modal_reply_nte').modal('hide');
                     $('#modal_view_nte').modal('hide');
                     nte_table.ajax.reload();
-                    $.notify({ message: response.message }, { type: 'success' });
+                    showSuccessModal('<strong>Your Explanation was Successfully Submitted</strong>');
                 } else {
-                    $.notify({ message: response.message }, { type: 'danger' });
+                    $.notify('Error: ' + response.message, {type:'danger', icon:'close'});
                 }
             },
             error: function(){
                 HoldOn.close();
-                $.notify({ message: 'Something went wrong. Please try again.' }, { type: 'danger' });
+                $.notify('Something went wrong. Please try again.', {type:'danger', icon:'close'});
             }
         });
     });
@@ -631,14 +661,14 @@ $(document).on('click', '.btn_view_nte', function(){
                 if(response.success){
                     $('#modal_edit_nte').modal('hide');
                     nte_table.ajax.reload();
-                    $.notify({ message: response.message }, { type: 'success' });
+                    showSuccessModal('<strong>NTE was Successfully Edited</strong>');
                 } else {
-                    $.notify({ message: response.message }, { type: 'danger' });
+                    $.notify('Error: ' + response.message, {type:'danger', icon:'close'});
                 }
             },
             error: function(){
                 HoldOn.close();
-                $.notify({ message: 'Something went wrong. Please try again.' }, { type: 'danger' });
+                $.notify('Something went wrong. Please try again.', {type:'danger', icon:'close'});
             }
         });
     });
@@ -666,14 +696,14 @@ $(document).on('click', '.btn_view_nte', function(){
                                 HoldOn.close();
                                 if(response.success){
                                     nte_table.ajax.reload();
-                                    $.notify({ message: response.message }, { type: 'success' });
+                                    showSuccessModal('<strong>NTE was Successfully Deleted</strong>');
                                 } else {
-                                    $.notify({ message: response.message }, { type: 'danger' });
+                                    $.notify('Error: ' + response.message, {type:'danger', icon:'close'});
                                 }
                             },
                             error: function(){
                                 HoldOn.close();
-                                $.notify({ message: 'Something went wrong. Please try again.' }, { type: 'danger' });
+                                $.notify('Something went wrong. Please try again.', {type:'danger', icon:'close'});
                             }
                         });
                     }
@@ -737,14 +767,14 @@ $(document).on('click', '#btn_save_da', function(){
                 $('#modal_issue_da').modal('hide');
                 $('#modal_view_nte').modal('hide');
                 nte_table.ajax.reload();
-                $.notify({ message: response.message }, { type: 'success' });
+                showSuccessModal('<strong>Disciplinary Action was Successfully Issued</strong>');
             } else {
-                $.notify({ message: response.message }, { type: 'danger' });
+                $.notify('Error: ' + response.message, {type:'danger', icon:'close'});
             }
         },
         error: function(){
             HoldOn.close();
-            $.notify({ message: 'Something went wrong. Please try again.' }, { type: 'danger' });
+            $.notify('Something went wrong. Please try again.', {type:'danger', icon:'close'});
         }
     });
 });
