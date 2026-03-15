@@ -295,7 +295,12 @@ Route::get('disciplinary_action', [DisciplinaryController::class, 'index'])->mid
 
     //Performance Evaluation Routes
 Route::get('performance_evaluation', [PerformanceEvaluationController::class, 'index'])->middleware(['auth'])->name('performance_evaluation');
-    
+    Route::get('performance_evaluation/list',       [PerformanceEvaluationController::class, 'list'])   ->middleware(['auth'])->name('performance_evaluation.list');
+    Route::post('performance_evaluation',           [PerformanceEvaluationController::class, 'store'])  ->middleware(['auth'])->name('performance_evaluation.store');
+    Route::get('performance_evaluation/{id}',       [PerformanceEvaluationController::class, 'show'])   ->middleware(['auth'])->name('performance_evaluation.show');
+    Route::get('performance_evaluation/{id}/edit',  [PerformanceEvaluationController::class, 'edit'])   ->middleware(['auth'])->name('performance_evaluation.edit');
+    Route::put('performance_evaluation/{id}',       [PerformanceEvaluationController::class, 'update']) ->middleware(['auth'])->name('performance_evaluation.update');
+    Route::delete('performance_evaluation/{id}',    [PerformanceEvaluationController::class, 'destroy'])->middleware(['auth'])->name('performance_evaluation.destroy');    
 
     
 
