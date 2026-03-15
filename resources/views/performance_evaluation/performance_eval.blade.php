@@ -27,6 +27,11 @@
     .rating-very_satisfactory{ background-color: #36b9cc; color: #fff; }
     .rating-satisfactory     { background-color: #4e73df; color: #fff; }
     .rating-unsatisfactory   { background-color: #e74a3b; color: #fff; }
+    
+    #modalView .table th,
+    #modalView .table td {
+        text-align: left;
+    }
 </style>
 @stop
 
@@ -117,7 +122,7 @@
                             <div class="form-group">
                                 <label>Employee <span class="text-danger">*</span></label>
                                 <select name="employee_id" id="addEmployeeId" class="form-control select2-modal" required style="width:100%">
-                                    <option value="">-- Select Employee --</option>
+                                    <option value=""></option>
                                     @foreach($employees as $emp)
                                         <option value="{{ $emp->id }}">
                                             {{ strtoupper($emp->last_name) }}, {{ $emp->first_name }} {{ $emp->middle_name }}
@@ -132,7 +137,7 @@
                             <div class="form-group">
                                 <label>Rating <span class="text-danger">*</span></label>
                                 <select name="rating" class="form-control" required>
-                                    <option value="">-- Select Rating --</option>
+                                    <option value="">Select Rating</option>
                                     <option value="outstanding">Outstanding</option>
                                     <option value="very_satisfactory">Very Satisfactory</option>
                                     <option value="satisfactory">Satisfactory</option>
@@ -214,7 +219,7 @@
                             <div class="form-group">
                                 <label>Employee <span class="text-danger">*</span></label>
                                 <select name="employee_id" id="editEmployeeId" class="form-control select2-modal" required style="width:100%">
-                                    <option value="">-- Select Employee --</option>
+                                    <option value=""></option>
                                     @foreach($employees as $emp)
                                         <option value="{{ $emp->id }}">
                                             {{ strtoupper($emp->last_name) }}, {{ $emp->first_name }} {{ $emp->middle_name }}
@@ -296,7 +301,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="modalViewLabel">
-                    <i class="fa fa-eye"></i> View Performance Evaluation
+                    View Performance Evaluation
                 </h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
@@ -334,6 +339,24 @@
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">
                     <i class="fa fa-times"></i> Close
                 </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- ══════════════════════════════════════════════════════
+     SUCCESS MODAL
+══════════════════════════════════════════════════════ --}}
+<div class="modal fade" id="modalSuccess" tabindex="-1" role="dialog" aria-labelledby="modalSuccessLabel" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content border-success">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title" id="modalSuccessLabel">
+                    <i class="fa fa-check-circle"></i> Success
+                </h5>
+            </div>
+            <div class="modal-body">
+                <p id="successMessage"></p>
             </div>
         </div>
     </div>
@@ -430,11 +453,24 @@ $(document).ready(function () {
         }
     });
 
+    // ── Success Modal Helper ──────────────────────────────────────────────────
+    function showSuccessModal(message) {
+        $('#successMessage').text(message);
+        $('#modalSuccess').modal('show');
+        setTimeout(function () {
+            $('#modalSuccess').modal('hide');
+        }, 3000);
+    }
+
     // ── Select2 (bound to modal to avoid z-index issues) ─────────────────────
     $('#modalAdd, #modalEdit').on('shown.bs.modal', function () {
         $(this).find('.select2-modal').select2({
             dropdownParent: $(this),
-            width: '100%'
+            width: '100%',
+            allowClear: true,
+            placeholder: 'Search and select an employee...',
+            minimumInputLength: 0,
+            tags: false
         });
     });
 
@@ -461,7 +497,7 @@ $(document).ready(function () {
                 if (res.success) {
                     $('#modalAdd').modal('hide');
                     table.ajax.reload(null, false);
-                    $.notify(res.message, { style: 'bootstrap', className: 'success' });
+                    showSuccessModal(res.message);
                 } else {
                     $.notify(res.message, { style: 'bootstrap', className: 'danger' });
                 }
@@ -566,7 +602,7 @@ $(document).ready(function () {
                 if (res.success) {
                     $('#modalEdit').modal('hide');
                     table.ajax.reload(null, false);
-                    $.notify(res.message, { style: 'bootstrap', className: 'success' });
+                    showSuccessModal(res.message);
                 } else {
                     $.notify(res.message, { style: 'bootstrap', className: 'danger' });
                 }
@@ -609,7 +645,7 @@ $(document).ready(function () {
                                 HoldOn.close();
                                 if (res.success) {
                                     table.ajax.reload(null, false);
-                                    $.notify(res.message, { style: 'bootstrap', className: 'success' });
+                                    showSuccessModal(res.message);
                                 } else {
                                     $.notify(res.message, { style: 'bootstrap', className: 'danger' });
                                 }

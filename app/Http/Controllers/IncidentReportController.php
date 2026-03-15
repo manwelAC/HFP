@@ -11,7 +11,12 @@ class IncidentReportController extends Controller
 {
     public function index()
     {
-        return view("incident_report.incident_report");
+        $employees = DB::table('tbl_employee')
+            ->where('is_active', 1)
+            ->orderBy('last_name')
+            ->get();
+
+        return view("incident_report.incident_report", compact('employees'));
     }
 
     // Load IR list for DataTable
@@ -71,16 +76,17 @@ class IncidentReportController extends Controller
         $search = $request->search;
 
         $employees = DB::table('tbl_employee')
-            ->where('is_active', 1)
+            ->leftJoin('lib_position', 'tbl_employee.position_id', '=', 'lib_position.id')
+            ->where('tbl_employee.is_active', 1)
             ->where(function($query) use ($search){
-                $query->where('first_name', 'like', "%$search%")
-                      ->orWhere('last_name', 'like', "%$search%")
-                      ->orWhere('emp_code', 'like', "%$search%");
+                $query->where('tbl_employee.first_name', 'like', "%$search%")
+                      ->orWhere('tbl_employee.last_name', 'like', "%$search%")
+                      ->orWhere('tbl_employee.emp_code', 'like', "%$search%");
             })
             ->select(
-                'id',
-                DB::raw("CONCAT(first_name, ' ', last_name) as text"),
-                'position_id as position'
+                'tbl_employee.id',
+                DB::raw("CONCAT(tbl_employee.first_name, ' ', tbl_employee.last_name) as text"),
+                DB::raw("COALESCE(lib_position.name, '') as position")
             )
             ->limit(10)
             ->get();
@@ -109,7 +115,7 @@ class IncidentReportController extends Controller
                 'incident'              => $request->incident,
                 'incident_date'         => $request->incident_date,
                 'location'              => $request->location,
-                'witnesses'             => $request->witnesses,
+                'witnesses'             => null,
                 'status'                => 'pending',
                 'date_created'          => Carbon::now(),
                 'user_id_added'         => Auth::id(),
@@ -125,6 +131,19 @@ class IncidentReportController extends Controller
                 ];
             }
             DB::table('tbl_ir_involved')->insert($involved);
+
+            // Insert witnesses
+            if($request->witnesses && count($request->witnesses) > 0){
+                $witnesses = [];
+                foreach($request->witnesses as $employee_id){
+                    $witnesses[] = [
+                        'incident_report_id' => $ir_id,
+                        'employee_id'        => $employee_id,
+                        'date_added'         => Carbon::now(),
+                    ];
+                }
+                DB::table('tbl_incident_report_witnesses')->insert($witnesses);
+            }
 
             return response()->json([
                 'success' => true,
@@ -165,7 +184,18 @@ class IncidentReportController extends Controller
             )
             ->get();
 
+        // Retrieve witnesses from junction table
+        $witnesses = DB::table('tbl_incident_report_witnesses as irw')
+            ->join('tbl_employee as e', 'irw.employee_id', '=', 'e.id')
+            ->where('irw.incident_report_id', $id)
+            ->select(
+                'e.id',
+                DB::raw("CONCAT(e.first_name, ' ', e.last_name) as name")
+            )
+            ->get();
+
         $ir->involved = $involved;
+        $ir->witnesses = $witnesses;
 
         return response()->json([
             'success' => true,
@@ -203,7 +233,6 @@ class IncidentReportController extends Controller
                 'incident'             => $request->incident,
                 'incident_date'        => $request->incident_date,
                 'location'             => $request->location,
-                'witnesses'            => $request->witnesses,
             ]);
 
             // Re-sync involved employees
@@ -217,6 +246,20 @@ class IncidentReportController extends Controller
                 ];
             }
             DB::table('tbl_ir_involved')->insert($involved);
+
+            // Re-sync witnesses
+            DB::table('tbl_incident_report_witnesses')->where('incident_report_id', $id)->delete();
+            if($request->witnesses && count($request->witnesses) > 0){
+                $witnesses = [];
+                foreach($request->witnesses as $employee_id){
+                    $witnesses[] = [
+                        'incident_report_id' => $id,
+                        'employee_id'        => $employee_id,
+                        'date_added'         => Carbon::now(),
+                    ];
+                }
+                DB::table('tbl_incident_report_witnesses')->insert($witnesses);
+            }
 
             return response()->json([
                 'success' => true,

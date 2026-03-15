@@ -101,7 +101,10 @@
                         <div class="form-group">
                             <label>Reported By <span class="text-danger">*</span></label>
                             <select class="form-control select2" id="reported_by" style="width:100%">
-                                <option value="">Select Employee</option>
+                                <option value=""></option>
+                                @foreach($employees as $emp)
+                                    <option value="{{ $emp->id }}" data-position="{{ $emp->position_id }}">{{ strtoupper($emp->last_name) }}, {{ $emp->first_name }}</option>
+                                @endforeach
                             </select>
                         </div>
                     </div>
@@ -139,6 +142,9 @@
                         <div class="form-group">
                             <label>Names Involved <span class="text-danger">*</span></label>
                             <select class="form-control select2" id="names_involved" multiple style="width:100%">
+                                @foreach($employees as $emp)
+                                    <option value="{{ $emp->id }}">{{ strtoupper($emp->last_name) }}, {{ $emp->first_name }}</option>
+                                @endforeach
                             </select>
                             <small class="text-muted">You can select multiple employees</small>
                         </div>
@@ -146,7 +152,12 @@
                     <div class="col-md-12">
                         <div class="form-group">
                             <label>Witnesses</label>
-                            <input type="text" class="form-control" id="witnesses" placeholder="Names of witnesses (optional)">
+                            <select class="form-control select2" id="witnesses" multiple style="width:100%">
+                                @foreach($employees as $emp)
+                                    <option value="{{ $emp->id }}">{{ strtoupper($emp->last_name) }}, {{ $emp->first_name }}</option>
+                                @endforeach
+                            </select>
+                            <small class="text-muted">Select employee witnesses (optional)</small>
                         </div>
                     </div>
                 </div>
@@ -199,7 +210,12 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label>Reported By <span class="text-danger">*</span></label>
-                            <select class="form-control select2" id="edit_reported_by" style="width:100%"></select>
+                            <select class="form-control select2" id="edit_reported_by" style="width:100%">
+                                <option value=""></option>
+                                @foreach($employees as $emp)
+                                    <option value="{{ $emp->id }}" data-position="{{ $emp->position_id }}">{{ strtoupper($emp->last_name) }}, {{ $emp->first_name }}</option>
+                                @endforeach
+                            </select>
                         </div>
                     </div>
                     <div class="col-md-6">
@@ -235,14 +251,23 @@
                     <div class="col-md-12">
                         <div class="form-group">
                             <label>Names Involved <span class="text-danger">*</span></label>
-                            <select class="form-control select2" id="edit_names_involved" multiple style="width:100%"></select>
+                            <select class="form-control select2" id="edit_names_involved" multiple style="width:100%">
+                                @foreach($employees as $emp)
+                                    <option value="{{ $emp->id }}">{{ strtoupper($emp->last_name) }}, {{ $emp->first_name }}</option>
+                                @endforeach
+                            </select>
                             <small class="text-muted">You can select multiple employees</small>
                         </div>
                     </div>
                     <div class="col-md-12">
                         <div class="form-group">
                             <label>Witnesses</label>
-                            <input type="text" class="form-control" id="edit_witnesses" placeholder="Names of witnesses (optional)">
+                            <select class="form-control select2" id="edit_witnesses" multiple style="width:100%">
+                                @foreach($employees as $emp)
+                                    <option value="{{ $emp->id }}">{{ strtoupper($emp->last_name) }}, {{ $emp->first_name }}</option>
+                                @endforeach
+                            </select>
+                            <small class="text-muted">Select employee witnesses (optional)</small>
                         </div>
                     </div>
                 </div>
@@ -379,45 +404,35 @@ $(document).ready(function(){
     // Initialize Select2 for Reported By
     $('#reported_by').select2({
         dropdownParent: $('#modal_add_ir'),
-        ajax: {
-            url: '{{ route("ir.search_employee") }}',
-            type: 'GET',
-            dataType: 'json',
-            delay: 250,
-            data: function(params){
-                return { search: params.term };
-            },
-            processResults: function(data){
-                return { results: data };
-            }
-        },
-        placeholder: '-- Search Employee --',
-        minimumInputLength: 1
+        placeholder: 'Search and select an employee...',
+        allowClear: true,
+        minimumInputLength: 0,
+        width: '100%'
     });
 
     // Initialize Select2 for Names Involved (multiple)
     $('#names_involved').select2({
         dropdownParent: $('#modal_add_ir'),
-        ajax: {
-            url: '{{ route("ir.search_employee") }}',
-            type: 'GET',
-            dataType: 'json',
-            delay: 250,
-            data: function(params){
-                return { search: params.term };
-            },
-            processResults: function(data){
-                return { results: data };
-            }
-        },
-        placeholder: '-- Search Employee --',
-        minimumInputLength: 1
+        placeholder: 'Search and select employees...',
+        allowClear: true,
+        minimumInputLength: 0,
+        width: '100%'
+    });
+
+    // Initialize Select2 for Witnesses (multiple)
+    $('#witnesses').select2({
+        dropdownParent: $('#modal_add_ir'),
+        placeholder: 'Search and select employees...',
+        allowClear: true,
+        minimumInputLength: 0,
+        width: '100%'
     });
 
     // Auto-fill position when reported_by is selected
     $('#reported_by').on('select2:select', function(e){
         var data = e.params.data;
-        $('#complainant_position').val(data.position);
+        // Position should be returned as position name from API, not ID
+        $('#complainant_position').val(data.position || '');
     });
 
     // Open Add IR Modal
@@ -425,12 +440,12 @@ $(document).ready(function(){
         // Reset form
         $('#reported_by').val(null).trigger('change');
         $('#names_involved').val(null).trigger('change');
+        $('#witnesses').val(null).trigger('change');
         $('#complainant_position').val('');
         $('#report_datetime').val('');
         $('#incident_date').val('');
         $('#location').val('');
         $('#incident').val('');
-        $('#witnesses').val('');
         $('#modal_add_ir').modal('show');
     });
 
@@ -438,6 +453,7 @@ $(document).ready(function(){
     $('#btn_save_ir').on('click', function(){
         var reported_by    = $('#reported_by').val();
         var names_involved = $('#names_involved').val();
+        var witnesses      = $('#witnesses').val();
         var report_datetime = $('#report_datetime').val();
         var incident_date  = $('#incident_date').val();
         var location       = $('#location').val();
@@ -468,7 +484,7 @@ $(document).ready(function(){
                 location: location,
                 incident: incident,
                 names_involved: names_involved,
-                witnesses: $('#witnesses').val()
+                witnesses: witnesses || []
             },
             success: function(response){
                 HoldOn.close();
@@ -487,48 +503,38 @@ $(document).ready(function(){
         });
     });
 
-        // Select2 for Edit Modal - Reported By
+    // Select2 for Edit Modal - Reported By
     $('#edit_reported_by').select2({
         dropdownParent: $('#modal_edit_ir'),
-        ajax: {
-            url: '{{ route("ir.search_employee") }}',
-            type: 'GET',
-            dataType: 'json',
-            delay: 250,
-            data: function(params){
-                return { search: params.term };
-            },
-            processResults: function(data){
-                return { results: data };
-            }
-        },
-        placeholder: '-- Search Employee --',
-        minimumInputLength: 1
+        placeholder: 'Search and select an employee...',
+        allowClear: true,
+        minimumInputLength: 0,
+        width: '100%'
     });
 
     // Select2 for Edit Modal - Names Involved
     $('#edit_names_involved').select2({
         dropdownParent: $('#modal_edit_ir'),
-        ajax: {
-            url: '{{ route("ir.search_employee") }}',
-            type: 'GET',
-            dataType: 'json',
-            delay: 250,
-            data: function(params){
-                return { search: params.term };
-            },
-            processResults: function(data){
-                return { results: data };
-            }
-        },
-        placeholder: '-- Search Employee --',
-        minimumInputLength: 1
+        placeholder: 'Search and select employees...',
+        allowClear: true,
+        minimumInputLength: 0,
+        width: '100%'
+    });
+
+    // Select2 for Edit Modal - Witnesses
+    $('#edit_witnesses').select2({
+        dropdownParent: $('#modal_edit_ir'),
+        placeholder: 'Search and select employees...',
+        allowClear: true,
+        minimumInputLength: 0,
+        width: '100%'
     });
 
     // Auto-fill position when edit_reported_by is selected
     $('#edit_reported_by').on('select2:select', function(e){
         var data = e.params.data;
-        $('#edit_complainant_position').val(data.position);
+        // Position should be returned as position name from API, not ID
+        $('#edit_complainant_position').val(data.position || '');
     });
 
 // View IR Action Button Click
@@ -580,6 +586,16 @@ $(document).on('click', '.btn_view_ir', function(){
                         </div>`;
                 });
 
+                // Build witnesses list
+                var witnesses_html = '';
+                if(ir.witnesses && ir.witnesses.length > 0){
+                    $.each(ir.witnesses, function(i, emp){
+                        witnesses_html += `<div class="mb-2"><span>${emp.name}</span></div>`;
+                    });
+                } else {
+                    witnesses_html = '<p class="text-muted">N/A</p>';
+                }
+
                 $('#view_ir_body').html(`
                     <div class="row">
                         <div class="col-md-6">
@@ -612,7 +628,7 @@ $(document).on('click', '.btn_view_ir', function(){
                         </div>
                         <div class="col-md-12">
                             <label class="font-weight-bold">Witnesses</label>
-                            <p>${ir.witnesses ?? 'N/A'}</p>
+                            ${witnesses_html}
                         </div>
                         <div class="col-md-6">
                             <label class="font-weight-bold">Status</label>
@@ -694,7 +710,6 @@ $(document).on('click', '.btn_edit_ir', function(){
                 $('#edit_incident_date').val(ir.incident_date);
                 $('#edit_location').val(ir.location);
                 $('#edit_incident').val(ir.incident);
-                $('#edit_witnesses').val(ir.witnesses);
                 $('#edit_complainant_position').val(ir.complainant_position);
 
                 // Fill reported_by Select2
@@ -708,6 +723,14 @@ $(document).on('click', '.btn_edit_ir', function(){
                     $('#edit_names_involved').append(option);
                 });
                 $('#edit_names_involved').trigger('change');
+
+                // Fill witnesses Select2 (multiple)
+                $('#edit_witnesses').empty();
+                $.each(ir.witnesses, function(i, emp){
+                    var option = new Option(emp.name, emp.id, true, true);
+                    $('#edit_witnesses').append(option);
+                });
+                $('#edit_witnesses').trigger('change');
 
                 $('#modal_edit_ir').modal('show');
             } else {
@@ -726,6 +749,7 @@ $(document).on('click', '#btn_update_ir', function(){
     var id             = $(this).data('id');
     var reported_by    = $('#edit_reported_by').val();
     var names_involved = $('#edit_names_involved').val();
+    var witnesses      = $('#edit_witnesses').val();
     var report_datetime = $('#edit_report_datetime').val();
     var incident_date  = $('#edit_incident_date').val();
     var location       = $('#edit_location').val();
@@ -755,7 +779,7 @@ $(document).on('click', '#btn_update_ir', function(){
             location:              location,
             incident:              incident,
             names_involved:        names_involved,
-            witnesses:             $('#edit_witnesses').val()
+            witnesses:             witnesses || []
         },
         success: function(response){
             HoldOn.close();

@@ -11,7 +11,12 @@ class NTEController extends Controller
 {
     public function index()
     {
-        return view("nte_management.nte");
+        $employees = DB::table('tbl_employee')
+            ->where('is_active', 1)
+            ->orderBy('last_name')
+            ->get();
+
+        return view("nte_management.nte", compact('employees'));
     }
 
     // Load NTE list for DataTable

@@ -201,7 +201,12 @@
                     <div class="col-md-12">
                         <div class="form-group">
                             <label>Employee <span class="text-danger">*</span></label>
-                            <select class="form-control select2" id="add_nte_employee_id" style="width:100%"></select>
+                            <select class="form-control select2" id="add_nte_employee_id" style="width:100%">
+                                <option value=""></option>
+                                @foreach($employees as $emp)
+                                    <option value="{{ $emp->id }}">{{ strtoupper($emp->last_name) }}, {{ $emp->first_name }}</option>
+                                @endforeach
+                            </select>
                         </div>
                     </div>
                     <div class="col-md-6">
@@ -385,20 +390,10 @@ $(document).ready(function(){
     // Initialize Select2 for standalone NTE employee
 $('#add_nte_employee_id').select2({
     dropdownParent: $('#modal_add_nte'),
-    ajax: {
-        url: '{{ route("ir.search_employee") }}',
-        type: 'GET',
-        dataType: 'json',
-        delay: 250,
-        data: function(params){
-            return { search: params.term };
-        },
-        processResults: function(data){
-            return { results: data };
-        }
-    },
-    placeholder: '-- Search Employee --',
-    minimumInputLength: 1
+    placeholder: 'Search and select an employee...',
+    allowClear: true,
+    minimumInputLength: 0,
+    width: '100%'
 });
 
 // Open Add NTE Modal
