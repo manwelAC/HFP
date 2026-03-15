@@ -268,7 +268,7 @@ Route::get('employees_management', [employeeController::class, 'employees_manage
      Route::post('load_face_time_audit_tbl', [facetimeauditController::class, 'load_face_time_audit_tbl'])->middleware(['auth'])->name('load_face_time_audit_tbl');
     
     //Incident Report Routes
-    Route::get('incident_report', [IncidentReportController::class, 'index'])->middleware(['auth'])->name('incident_report');
+Route::get('incident_report', [IncidentReportController::class, 'index'])->middleware(['auth'])->name('incident_report');
     Route::get('ir/list', [IncidentReportController::class, 'list'])->middleware(['auth'])->name('ir.list');
     Route::get('ir/search_employee', [IncidentReportController::class, 'searchEmployee'])->middleware(['auth'])->name('ir.search_employee');
     Route::post('ir/store', [IncidentReportController::class, 'store'])->middleware(['auth'])->name('ir.store');
@@ -278,7 +278,7 @@ Route::get('employees_management', [employeeController::class, 'employees_manage
     Route::post('ir/review/{id}', [IncidentReportController::class, 'review'])->middleware(['auth'])->name('ir.review');
 
     //NTE Management Routes
-    Route::get('nte_management', [NteController::class, 'index'])->middleware(['auth'])->name('nte_management');
+Route::get('nte_management', [NteController::class, 'index'])->middleware(['auth'])->name('nte_management');
     Route::get('nte/list', [NteController::class, 'list'])->middleware(['auth'])->name('nte.list');
     Route::get('nte/view/{id}', [NteController::class, 'view'])->middleware(['auth'])->name('nte.view');
     Route::post('nte/store', [NteController::class, 'store'])->middleware(['auth'])->name('nte.store');
@@ -287,12 +287,14 @@ Route::get('employees_management', [employeeController::class, 'employees_manage
     Route::post('nte/delete/{id}', [NteController::class, 'delete'])->middleware(['auth'])->name('nte.delete');
                                                         
     //Disciplinary Action Routes
-    Route::get('disciplinary_action', [DisciplinaryController::class, 'index'])->middleware(['auth'])->name('disciplinary');
+Route::get('disciplinary_action', [DisciplinaryController::class, 'index'])->middleware(['auth'])->name('disciplinary');
     Route::get('da/list', [DisciplinaryController::class, 'list'])->middleware(['auth'])->name('da.list');
     Route::get('da/view/{id}', [DisciplinaryController::class, 'view'])->middleware(['auth'])->name('da.view');
     Route::post('da/store', [DisciplinaryController::class, 'store'])->middleware(['auth'])->name('da.store');
     Route::post('da/delete/{id}', [DisciplinaryController::class, 'delete'])->middleware(['auth'])->name('da.delete');          
 
+    //Performance Evaluation Routes
+Route::get('performance_evaluation', [PerformanceEvaluationController::class, 'index'])->middleware(['auth'])->name('performance_evaluation');
     
 
     
