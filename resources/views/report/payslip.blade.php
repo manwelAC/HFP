@@ -36,7 +36,7 @@
         }
 
         .payslip img {
-            width: 60px;
+            width: 150px;
         }
 
         .payslip h1 {
@@ -72,7 +72,7 @@
         }
 
         .logo {
-            max-width: 100px;
+            max-width: 200px;
             height: auto;
         }
     </style>
@@ -97,7 +97,7 @@
                                     $data = $chunk[$index];
                                     $total_income = 0;
                                     $total_deduction = 0;
-                                    $imagePath = 'https://hfp.intra-code.com/public/upload_images/logo/logs.png';
+                                    $imagePath = 'https://hfp.intra-code.com/public/upload_images/logo/payslip_logo.png';
                                     $type = pathinfo($imagePath, PATHINFO_EXTENSION);
                                     $dataPath = file_get_contents($imagePath);
                                     $base64 = 'data:image/' . $type . ';base64,' . base64_encode($dataPath);

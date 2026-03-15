@@ -312,7 +312,7 @@ class reportController extends Controller
 
         $company_info = array(
             "company_name" => Auth::user()->company["company_name"],
-            "logo_main" => asset(Auth::user()->company["logo_main"]),
+            "logo_main" => asset('upload_images/logo/payslip_logo.png'),
             "address" => Auth::user()->company["address"],
             
         );
